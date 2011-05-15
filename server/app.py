@@ -1,21 +1,38 @@
 #
 #  GigaPan Mobile
-#  Powered by OpenZoom.org
 #
-#  Copyright (c) 2009, Daniel Gasienica <daniel@gasienica.ch>
+#  Version: MPL 1.1/GPL 3/LGPL 3
 #
-#  OpenZoom is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#  The contents of this file are subject to the Mozilla Public License Version
+#  1.1 (the "License"); you may not use this file except in compliance with
+#  the License. You may obtain a copy of the License at
+#  http://www.mozilla.org/MPL/
 #
-#  OpenZoom is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
+#  Software distributed under the License is distributed on an "AS IS" basis,
+#  WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+#  for the specific language governing rights and limitations under the
+#  License.
 #
-#  You should have received a copy of the GNU General Public License
-#  along with OpenZoom. If not, see <http://www.gnu.org/licenses/>.
+#  The Original Code is the GigaPan Mobile.
+#
+#  The Initial Developer of the Original Code is Daniel Gasienica.
+#  Portions created by the Initial Developer are Copyright (c) 2007-2009
+#  the Initial Developer. All Rights Reserved.
+#
+#  Contributor(s):
+#    Daniel Gasienica <daniel@gasienica.ch>
+#
+#  Alternatively, the contents of this file may be used under the terms of
+#  either the GNU General Public License Version 3 or later (the "GPL"), or
+#  the GNU Lesser General Public License Version 3 or later (the "LGPL"),
+#  in which case the provisions of the GPL or the LGPL are applicable instead
+#  of those above. If you wish to allow use of your version of this file only
+#  under the terms of either the GPL or the LGPL, and not to allow others to
+#  use your version of this file under the terms of the MPL, indicate your
+#  decision by deleting the provisions above and replace them with the notice
+#  and other provisions required by the GPL or the LGPL. If you do not delete
+#  the provisions above, a recipient may use your version of this file under
+#  the terms of any one of the MPL, the GPL or the LGPL.
 
 from google.appengine.api.images import Image
 from google.appengine.api.images import crop
@@ -35,7 +52,10 @@ import simplejson as json
 import xml.dom.minidom
 
 DZI_URL = "http://gigapan-mobile.appspot.com/gigapan/%d.dzi"
-DZI_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?><Image TileSize="256" Overlap="0" Format="jpg" xmlns="http://schemas.microsoft.com/deepzoom/2008"><Size Width="%(width)s" Height="%(height)s"/></Image>"""
+DZI_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>\
+<Image TileSize="256" Overlap="0" Format="jpg" xmlns="http://schemas.microsoft.com/deepzoom/2008">\
+<Size Width="%(width)s" Height="%(height)s"/>\
+</Image>"""
 
 API_MOST_POPULAR = "http://api.gigapan.org/beta/gigapans/most_popular.json"
 API_MOST_RECENT = "http://api.gigapan.org/beta/gigapans/most_recent.json"
@@ -43,6 +63,8 @@ API_GIGAPAN = "http://api.gigapan.org/beta/gigapans/%d.json"
 API_GIGAPAN_TILE_URL = "http://tile%(tileserver)s.gigapan.org/gigapans0/%(id)d/tiles"
 API_GIGAPAN_USER = "http://gigapan.org/viewProfile.php?userid=%d"
 FEED_ICON_URL = "http://gigapan-mobile.appspot.com/static/images/feed-icon.jpg"
+#VIEW_GIGAPAN_URL = "http://gigapan.org/viewGigapan.php?id=%d"
+VIEW_GIGAPAN_URL = "http://gigapan-mobile.appspot.com/gigapan/%d"
 
 # Data Model
 class GigaPanUser(db.Model):
@@ -163,7 +185,7 @@ class UserRequestHandler(webapp.RequestHandler):
         user = db.Query(GigaPanUser).filter("id =", id).get()
         if not user:
             self.error(404)
-        gigapans = db.GqlQuery("SELECT * FROM GigaPan WHERE owner = :1", user.key()).fetch(50)
+        gigapans = db.GqlQuery("SELECT * FROM GigaPan WHERE owner = :1 ORDER BY id DESC", user.key()).fetch(100)
         for gigapan in gigapans:
             gigapan.name = smart_truncate(gigapan.name, 26)
         template_values = {"gigapans": gigapans}
@@ -176,7 +198,7 @@ class UserFeedRequestHandler(webapp.RequestHandler):
         user = db.Query(GigaPanUser).filter("id =", id).get()
         if not user:
             self.error(404)
-        gigapans = db.GqlQuery("SELECT * FROM GigaPan WHERE owner = :1", user.key()).fetch(50)
+        gigapans = db.GqlQuery("SELECT * FROM GigaPan WHERE owner = :1 ORDER BY id DESC", user.key()).fetch(50)
         heading = "GigaPans (%s)"%user.username
         doc = create_feed_skeleton(heading)
         create_feed(doc, gigapans, heading)
@@ -202,7 +224,7 @@ class HighlightsFeedRequestHandler(webapp.RequestHandler):
         doc = create_feed_skeleton("GigaPan Highlights")
         gigapans = db.GqlQuery("SELECT * FROM GigaPan ORDER BY id DESC").fetch(20)
         create_feed(doc, gigapans, "Most Recent")
-        gigapans = db.GqlQuery("SELECT * FROM GigaPan ORDER BY explore_score DESC").fetch(20)
+        gigapans = db.GqlQuery("SELECT * FROM GigaPan ORDER BY explore_score DESC").fetch(10)
         create_feed(doc, gigapans, "Most Popular")
 
         self.response.headers["Content-Type"] = "application/rss+xml"
@@ -295,9 +317,31 @@ def create_feed(doc, gigapans, heading):
         title_text = doc.createTextNode(gigapan_title)
         title.appendChild(title_text)
         item.appendChild(title)
+        
+        link = doc.createElement("link")
+        link_text = doc.createTextNode(VIEW_GIGAPAN_URL%gigapan_id)
+        link.appendChild(link_text)
+        item.appendChild(link)
+
+        description = doc.createElement("description")
+        description_template = """<a href="%(link)s"><img src="http://www.gigapan.org/gigapans/%(id)d-%(width)dx%(height)d.jpg" width="%(width)d" height="%(height)d" border="0"/></a>"""
+        aspect_ratio = gigapan.width / float(gigapan.height)
+
+        # Fit in 800x160px bounding box
+        h = 160
+        w = int(math.floor(h * aspect_ratio))
+        
+        if w > 800:
+            w = 800
+            h = int(math.floor(w / aspect_ratio))
+        
+        description_text = doc.createTextNode(description_template%{"id": gigapan_id, "width": w, "height": h,
+                                                                    "link": VIEW_GIGAPAN_URL%gigapan_id})
+        description.appendChild(description_text)
+        item.appendChild(description)
 
         guid = doc.createElement("guid")
-        guid_text = doc.createTextNode(DZI_URL%gigapan_id)
+        guid_text = doc.createTextNode(VIEW_GIGAPAN_URL%gigapan_id)
         guid.appendChild(guid_text)
         item.appendChild(guid)
 

@@ -10,16 +10,16 @@
     </head>
     <body>
         <div id="header">
-			<a id="back" href="javascript:window.history.back()"><img src="../static/images/back.png"/></a>
+            <a id="back" href="javascript:window.history.back()"><img src="../static/images/back.png"/></a>
             <a id="logo_wb" href="/"><img src="../static/images/logo.png" alt="GigaPan Mobile"/></a>
         </div>
         <div id="content">
             <ul>
-			    {% for gigapan in gigapans %}
+                {% for gigapan in gigapans %}
                 <li>
                     <h2><a href="../gigapan/{{ gigapan.id }}">{{ gigapan.name }}</a></h2>
                 </li>
-			    {% endfor %}
+                {% endfor %}
             </ul>
         </div>
         <!-- Tracker -->

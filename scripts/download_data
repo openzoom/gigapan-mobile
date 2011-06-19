@@ -1,6 +1,13 @@
 #!/bin/sh
 
+TIMESTAMP=`date +%Y-%m-%d-%s`
+
 appcfg.py download_data \
     --application=gigapan-mobile \
+    --kind=${1} \
+    --config_file=bulkloader.yaml \
+    --rps_limit=1000 --bandwidth_limit=2500000 --batch_size=500 \
     --url=http://staging.gigapan-mobile.appspot.com/_ah/remote_api \
-    --filename=./data/$1.sql3
+    --filename=./data/${1}-$TIMESTAMP.csv
+
+rm bulkloader-*

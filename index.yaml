@@ -4,3 +4,14 @@ indexes:
       - name: owner
       - name: id
         direction: desc
+
+    # Downloader
+    - kind: GigaPan
+      properties:
+      - name: __key__
+        direction: desc
+
+    - kind: GigaPanUser
+      properties:
+      - name: __key__
+        direction: desc

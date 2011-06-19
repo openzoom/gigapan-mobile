@@ -70,7 +70,7 @@ class PopularRequestHandler(SimpleQueryRequestHandler):
         query = 'SELECT * FROM GigaPan ORDER BY explore_score DESC'
         super(PopularRequestHandler, self).get(query)
 
-class RecentRequestHandler(webapp.RequestHandler):
+class RecentRequestHandler(SimpleQueryRequestHandler):
     def get(self):
         query = 'SELECT * FROM GigaPan ORDER BY id DESC'
         super(RecentRequestHandler, self).get(query)

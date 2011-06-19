@@ -60,11 +60,13 @@ class SearchRequestHandler(webapp.RequestHandler):
 
 
 class SimpleQueryRequestHandler(webapp.RequestHandler):
-    def get(self, query='SELECT * FROM GigaPan ORDER BY id DESC'):
+    def get(self, query):
         count = get_count(self.request)
         gigapans = get_gigapans(query, count)
+
+        output = json.dumps(gigapans)
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps(gigapans))
+        self.response.out.write(output)
 
 class PopularRequestHandler(SimpleQueryRequestHandler):
     def get(self):

@@ -2,5 +2,5 @@
 .DS_Store
 
 # Google App Engine
+scripts/data/
 bulkloader-*
-scripts/

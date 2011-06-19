@@ -3,4 +3,4 @@
 appcfg.py download_data \
     --application=gigapan-mobile \
     --url=http://staging.gigapan-mobile.appspot.com/_ah/remote_api \
-    --filename=./data/$0.sql3
+    --filename=./data/$1.sql3

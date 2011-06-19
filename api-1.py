@@ -33,6 +33,8 @@
 #  and other provisions required by the GPL or the LGPL. If you do not delete
 #  the provisions above, a recipient may use your version of this file under
 #  the terms of any one of the MPL, the GPL or the LGPL.
+#
+
 
 from google.appengine.api.urlfetch import fetch
 from google.appengine.ext import db
@@ -40,7 +42,8 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-# Requests
+
+# Handlers
 class SearchRequestHandler(webapp.RequestHandler):
     def get(self):
         q = self.request.get("q")
@@ -51,6 +54,7 @@ application = webapp.WSGIApplication([("/api/1/search", SearchRequestHandler)],
 
 def main():
     run_wsgi_app(application)
+
 
 if __name__ == "__main__":
     main()

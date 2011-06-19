@@ -33,6 +33,8 @@
 #  and other provisions required by the GPL or the LGPL. If you do not delete
 #  the provisions above, a recipient may use your version of this file under
 #  the terms of any one of the MPL, the GPL or the LGPL.
+#
+
 
 from google.appengine.api.images import Image
 from google.appengine.api.images import crop
@@ -63,7 +65,6 @@ API_GIGAPAN = "http://api.gigapan.org/beta/gigapans/%d.json"
 API_GIGAPAN_TILE_URL = "http://tile%(tileserver)s.gigapan.org/gigapans0/%(id)d/tiles"
 API_GIGAPAN_USER = "http://gigapan.org/viewProfile.php?userid=%d"
 FEED_ICON_URL = "http://gigapan-mobile.appspot.com/static/images/feed-icon.jpg"
-#VIEW_GIGAPAN_URL = "http://gigapan.org/viewGigapan.php?id=%d"
 VIEW_GIGAPAN_URL = "http://gigapan-mobile.appspot.com/gigapan/%d"
 
 # Data Model

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+appcfg.py upload_data \
+    --kind=${1} \
+    --config_file=bulkloader.yaml \
+    --rps_limit=250 --bandwidth_limit=25000 --batch_size=500 \
+    --url=http://localhost:8080/_ah/remote_api \
+    --filename=./data/${1}-${2}.csv
+
+rm bulkloader-*

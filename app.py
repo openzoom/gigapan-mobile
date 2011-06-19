@@ -33,6 +33,8 @@
 #  and other provisions required by the GPL or the LGPL. If you do not delete
 #  the provisions above, a recipient may use your version of this file under
 #  the terms of any one of the MPL, the GPL or the LGPL.
+#
+
 
 from google.appengine.api.images import Image
 from google.appengine.api.images import crop
@@ -51,6 +53,8 @@ import random
 import simplejson as json
 import xml.dom.minidom
 
+from models import GigaPan, GigaPanUser
+
 DZI_URL = "http://gigapan-mobile.appspot.com/gigapan/%d.dzi"
 DZI_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>\
 <Image TileSize="256" Overlap="0" Format="jpg" xmlns="http://schemas.microsoft.com/deepzoom/2008">\
@@ -63,34 +67,8 @@ API_GIGAPAN = "http://api.gigapan.org/beta/gigapans/%d.json"
 API_GIGAPAN_TILE_URL = "http://tile%(tileserver)s.gigapan.org/gigapans0/%(id)d/tiles"
 API_GIGAPAN_USER = "http://gigapan.org/viewProfile.php?userid=%d"
 FEED_ICON_URL = "http://gigapan-mobile.appspot.com/static/images/feed-icon.jpg"
-#VIEW_GIGAPAN_URL = "http://gigapan.org/viewGigapan.php?id=%d"
 VIEW_GIGAPAN_URL = "http://gigapan-mobile.appspot.com/gigapan/%d"
 
-# Data Model
-class GigaPanUser(db.Model):
-    id = db.IntegerProperty(required=True)
-    username = db.StringProperty(required=True)
-    first_name = db.StringProperty()
-    last_name = db.StringProperty()
-
-class GigaPan(db.Model):
-    id = db.IntegerProperty(required=True)
-    width = db.IntegerProperty(required=True)
-    height = db.IntegerProperty(required=True)
-
-    name = db.StringProperty()
-    description = db.TextProperty()
-    gigapixels = db.FloatProperty()
-    explore_score = db.IntegerProperty()
-    views = db.IntegerProperty()
-
-    taken = db.DateTimeProperty()
-    uploaded = db.DateTimeProperty()
-    updated = db.DateTimeProperty()
-
-    location = db.GeoPtProperty()
-    altitude = db.FloatProperty()
-    owner = db.ReferenceProperty(GigaPanUser)
 
 def get_gigapan(id):
     gigapan = db.Query(GigaPan).filter("id =", id).get()
@@ -317,7 +295,7 @@ def create_feed(doc, gigapans, heading):
         title_text = doc.createTextNode(gigapan_title)
         title.appendChild(title_text)
         item.appendChild(title)
-        
+
         link = doc.createElement("link")
         link_text = doc.createTextNode(VIEW_GIGAPAN_URL%gigapan_id)
         link.appendChild(link_text)
@@ -330,11 +308,11 @@ def create_feed(doc, gigapans, heading):
         # Fit in 800x160px bounding box
         h = 160
         w = int(math.floor(h * aspect_ratio))
-        
+
         if w > 800:
             w = 800
             h = int(math.floor(w / aspect_ratio))
-        
+
         description_text = doc.createTextNode(description_template%{"id": gigapan_id, "width": w, "height": h,
                                                                     "link": VIEW_GIGAPAN_URL%gigapan_id})
         description.appendChild(description_text)

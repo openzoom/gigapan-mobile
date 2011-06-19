@@ -1,0 +1,9 @@
+# system
+.DS_Store
+
+# Google App Engine
+bulkloader-*
+data/
+
+# Python
+*.pyc

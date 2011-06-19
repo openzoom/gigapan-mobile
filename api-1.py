@@ -33,6 +33,8 @@
 #  and other provisions required by the GPL or the LGPL. If you do not delete
 #  the provisions above, a recipient may use your version of this file under
 #  the terms of any one of the MPL, the GPL or the LGPL.
+#
+
 
 from google.appengine.api.urlfetch import fetch
 from google.appengine.ext import db
@@ -40,17 +42,72 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-# Requests
+import logging
+import simplejson as json
+
+from models import GigaPan, GigaPanUser
+
+# Constants
+DEFAULT_RESULT_COUNT = 100
+MAX_RESULT_COUNT = 500
+
+
+# Handlers
 class SearchRequestHandler(webapp.RequestHandler):
     def get(self):
         q = self.request.get("q")
         self.response.out.write(q)
 
-application = webapp.WSGIApplication([("/api/1/search", SearchRequestHandler)],
-                                      debug=True)
+
+class SimpleQueryRequestHandler(webapp.RequestHandler):
+    def get(self, query):
+        count = get_count(self.request)
+        gigapans = get_gigapans(query, count)
+
+        output = json.dumps(gigapans)
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(output)
+
+class PopularRequestHandler(SimpleQueryRequestHandler):
+    def get(self):
+        query = 'SELECT * FROM GigaPan ORDER BY explore_score DESC'
+        super(PopularRequestHandler, self).get(query)
+
+class RecentRequestHandler(SimpleQueryRequestHandler):
+    def get(self):
+        query = 'SELECT * FROM GigaPan ORDER BY id DESC'
+        super(RecentRequestHandler, self).get(query)
+
+
+# Functions
+def get_gigapans(query, count):
+    models = db.GqlQuery(query).fetch(count)
+    gigapans = []
+    for model in models:
+        gigapan = {
+            'id': model.id,
+            'name': model.name,
+            'width': model.width,
+            'height': model.height
+        }
+        gigapans.append(gigapan)
+    return gigapans
+
+def get_count(request):
+    return min(int(request.get('count', DEFAULT_RESULT_COUNT)), MAX_RESULT_COUNT)
+
+
+# Application
+application = webapp.WSGIApplication([
+    ('/api/1/gigapans/search', SearchRequestHandler),
+    ('/api/1/gigapans/recent', RecentRequestHandler),
+    ('/api/1/gigapans/popular', PopularRequestHandler),
+], debug=True)
+
 
 def main():
     run_wsgi_app(application)
+
 
 if __name__ == "__main__":
     main()

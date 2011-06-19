@@ -42,7 +42,13 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
 
+import simplejson as json
+
 from models import GigaPan, GigaPanUser
+
+# Constants
+DEFAULT_RESULT_COUNT = 100
+MAX_RESULT_COUNT = 500
 
 
 # Handlers
@@ -51,13 +57,41 @@ class SearchRequestHandler(webapp.RequestHandler):
         q = self.request.get("q")
         self.response.out.write(q)
 
-class PopularRequestHandler(webapp.RequestHandler):
+
+class SimpleQueryRequestHandler(webapp.RequestHandler):
+    def get(self, query='SELECT * FROM GigaPan ORDER BY id DESC'):
+        count = get_count(self.request)
+        gigapans = get_gigapans(query, count)
+        self.response.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps(gigapans))
+
+class PopularRequestHandler(SimpleQueryRequestHandler):
     def get(self):
-        self.response.out.write('popular')
+        query = 'SELECT * FROM GigaPan ORDER BY explore_score DESC'
+        super(PopularRequestHandler, self).get(query)
 
 class RecentRequestHandler(webapp.RequestHandler):
     def get(self):
-        self.response.out.write('recent')
+        query = 'SELECT * FROM GigaPan ORDER BY id DESC'
+        super(RecentRequestHandler, self).get(query)
+
+
+# Functions
+def get_gigapans(query, count):
+    models = db.GqlQuery(query).fetch(count)
+    gigapans = []
+    for model in models:
+        gigapan = {
+            'id': model.id,
+            'name': model.name,
+            'width': model.width,
+            'height': model.height
+        }
+        gigapans.append(gigapan)
+    return gigapans
+
+def get_count(request):
+    return min(int(request.get('count', DEFAULT_RESULT_COUNT)), MAX_RESULT_COUNT)
 
 
 # Application

@@ -49,8 +49,22 @@ class SearchRequestHandler(webapp.RequestHandler):
         q = self.request.get("q")
         self.response.out.write(q)
 
-application = webapp.WSGIApplication([("/api/1/search", SearchRequestHandler)],
-                                      debug=True)
+class PopularRequestHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.out.write('popular')
+
+class RecentRequestHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.out.write('recent')
+
+
+# Application
+application = webapp.WSGIApplication([
+    ('/api/1/search', SearchRequestHandler),
+    ('/api/1/recent', RecentRequestHandler),
+    ('/api/1/popular', PopularRequestHandler),
+], debug=True)
+
 
 def main():
     run_wsgi_app(application)

@@ -36,41 +36,31 @@
 #
 
 
-from google.appengine.api.urlfetch import fetch
 from google.appengine.ext import db
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template
-from google.appengine.ext.webapp.util import run_wsgi_app
-
-from models import GigaPan, GigaPanUser
 
 
-# Handlers
-class SearchRequestHandler(webapp.RequestHandler):
-    def get(self):
-        q = self.request.get("q")
-        self.response.out.write(q)
+# Models
+class GigaPanUser(db.Model):
+    id = db.IntegerProperty(required=True)
+    username = db.StringProperty(required=True)
+    first_name = db.StringProperty()
+    last_name = db.StringProperty()
 
-class PopularRequestHandler(webapp.RequestHandler):
-    def get(self):
-        self.response.out.write('popular')
+class GigaPan(db.Model):
+    id = db.IntegerProperty(required=True)
+    width = db.IntegerProperty(required=True)
+    height = db.IntegerProperty(required=True)
 
-class RecentRequestHandler(webapp.RequestHandler):
-    def get(self):
-        self.response.out.write('recent')
+    name = db.StringProperty()
+    description = db.TextProperty()
+    gigapixels = db.FloatProperty()
+    explore_score = db.IntegerProperty()
+    views = db.IntegerProperty()
 
+    taken = db.DateTimeProperty()
+    uploaded = db.DateTimeProperty()
+    updated = db.DateTimeProperty()
 
-# Application
-application = webapp.WSGIApplication([
-    ('/api/1/search', SearchRequestHandler),
-    ('/api/1/recent', RecentRequestHandler),
-    ('/api/1/popular', PopularRequestHandler),
-], debug=True)
-
-
-def main():
-    run_wsgi_app(application)
-
-
-if __name__ == "__main__":
-    main()
+    location = db.GeoPtProperty()
+    altitude = db.FloatProperty()
+    owner = db.ReferenceProperty(GigaPanUser)

@@ -53,6 +53,8 @@ import random
 import simplejson as json
 import xml.dom.minidom
 
+from models import GigaPan, GigaPanUser
+
 DZI_URL = "http://gigapan-mobile.appspot.com/gigapan/%d.dzi"
 DZI_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>\
 <Image TileSize="256" Overlap="0" Format="jpg" xmlns="http://schemas.microsoft.com/deepzoom/2008">\
@@ -67,31 +69,6 @@ API_GIGAPAN_USER = "http://gigapan.org/viewProfile.php?userid=%d"
 FEED_ICON_URL = "http://gigapan-mobile.appspot.com/static/images/feed-icon.jpg"
 VIEW_GIGAPAN_URL = "http://gigapan-mobile.appspot.com/gigapan/%d"
 
-# Data Model
-class GigaPanUser(db.Model):
-    id = db.IntegerProperty(required=True)
-    username = db.StringProperty(required=True)
-    first_name = db.StringProperty()
-    last_name = db.StringProperty()
-
-class GigaPan(db.Model):
-    id = db.IntegerProperty(required=True)
-    width = db.IntegerProperty(required=True)
-    height = db.IntegerProperty(required=True)
-
-    name = db.StringProperty()
-    description = db.TextProperty()
-    gigapixels = db.FloatProperty()
-    explore_score = db.IntegerProperty()
-    views = db.IntegerProperty()
-
-    taken = db.DateTimeProperty()
-    uploaded = db.DateTimeProperty()
-    updated = db.DateTimeProperty()
-
-    location = db.GeoPtProperty()
-    altitude = db.FloatProperty()
-    owner = db.ReferenceProperty(GigaPanUser)
 
 def get_gigapan(id):
     gigapan = db.Query(GigaPan).filter("id =", id).get()

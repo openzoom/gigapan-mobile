@@ -1,0 +1,5 @@
+# system
+.DS_Store
+
+# Google App Engine
+bulkloader-*

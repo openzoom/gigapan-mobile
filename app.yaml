@@ -1,5 +1,5 @@
 application: gigapan-mobile
-version: staging
+version: 2011-06-19-1
 runtime: python
 api_version: 1
 

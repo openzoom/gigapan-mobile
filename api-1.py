@@ -99,9 +99,9 @@ def get_count(request):
 
 # Application
 application = webapp.WSGIApplication([
-    ('/api/1/search', SearchRequestHandler),
-    ('/api/1/recent', RecentRequestHandler),
-    ('/api/1/popular', PopularRequestHandler),
+    ('/api/1/gigapans/search', SearchRequestHandler),
+    ('/api/1/gigapans/recent', RecentRequestHandler),
+    ('/api/1/gigapans/popular', PopularRequestHandler),
 ], debug=True)
 
 

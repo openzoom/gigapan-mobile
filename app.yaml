@@ -1,5 +1,5 @@
 application: gigapan-mobile
-version: live
+version: staging
 runtime: python
 api_version: 1
 

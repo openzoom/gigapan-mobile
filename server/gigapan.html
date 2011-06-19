@@ -12,7 +12,7 @@
         </script>
         <script type="text/javascript">
             var viewer;
-            
+
             function init(){
                 if (navigator.userAgent.indexOf("iPhone") != -1 || navigator.userAgent.indexOf("iPod") != -1) {
                     updateOrientation();
@@ -23,48 +23,48 @@
                 else {
                     var flashvars = {};
                     flashvars.source = "{{ id }}.dzi";
-                    
+
                     var params = {};
                     params.bgcolor = "#000000";
                     params.allowfullscreen = "true";
-                    
+
                     var attributes = {};
                     attributes.id = "ozViewer";
                     attributes.name = "ozViewer";
-                    
+
                     swfobject.embedSWF("../static/OpenZoomViewer.swf", "container", "100%", "100%", "9.0.0", false, flashvars, params, attributes);
                 }
             }
-            
+
             function updateOrientation(){
                 var contentType = "show_";
-                
+
                 if (window.navigator.standalone) {
                     contentType += "standalone_";
                 }
-                
+
                 switch (window.orientation) {
                     case 0:
                         contentType += "normal";
                         break;
-                        
+
                     case -90:
                         contentType += "right";
                         break;
-                        
+
                     case 90:
                         contentType += "left";
                         break;
-                        
+
                     case 180:
                         contentType += "flipped";
                         break;
                 }
-                
+
                 document.getElementById("header").setAttribute("class", "visible");
                 document.getElementById("container").setAttribute("class", contentType);
             }
-            
+
             Seadragon.Utils.addEvent(window, "load", init);
         </script>
         <style type="text/css">
@@ -73,7 +73,7 @@
                 padding: 0;
                 -webkit-text-size-adjust: none;
             }
-            
+
             html, body {
                 height: 100%;
                 overflow: hidden;
@@ -91,7 +91,7 @@
                 position: absolute;
                 left: 4px;
             }
-            
+
             a {
                 text-decoration: none;
                 color: #FFF;
@@ -140,7 +140,7 @@
             try {
                 var pageTracker = _gat._getTracker("UA-5667667-4");
                 pageTracker._trackPageview();
-            } 
+            }
             catch (err) {
             }
         </script>

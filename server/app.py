@@ -317,7 +317,7 @@ def create_feed(doc, gigapans, heading):
         title_text = doc.createTextNode(gigapan_title)
         title.appendChild(title_text)
         item.appendChild(title)
-        
+
         link = doc.createElement("link")
         link_text = doc.createTextNode(VIEW_GIGAPAN_URL%gigapan_id)
         link.appendChild(link_text)
@@ -330,11 +330,11 @@ def create_feed(doc, gigapans, heading):
         # Fit in 800x160px bounding box
         h = 160
         w = int(math.floor(h * aspect_ratio))
-        
+
         if w > 800:
             w = 800
             h = int(math.floor(w / aspect_ratio))
-        
+
         description_text = doc.createTextNode(description_template%{"id": gigapan_id, "width": w, "height": h,
                                                                     "link": VIEW_GIGAPAN_URL%gigapan_id})
         description.appendChild(description_text)

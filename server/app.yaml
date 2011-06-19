@@ -14,9 +14,9 @@ handlers:
 - url: /crossdomain.xml
   static_files: crossdomain.xml
   upload: crossdomain.xml
-  
+
 - url: /api/1/.*
   script: api-1.py
-  
+
 - url: /.*
   script: app.py
